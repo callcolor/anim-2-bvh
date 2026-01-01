@@ -6,14 +6,14 @@ namespace AninToBVH
 {
     public class JointBVH
     {
-        public BVHJoint[]   mJoints;
-        public Quaternion   mFrameMatrix;
-        public Quaternion   mOffsetMatrix;
-        public string[]     wOrder;
+        public BVHJoint[] mJoints;
+        public Quaternion mFrameMatrix;
+        public Quaternion mOffsetMatrix;
+        public string[] wOrder;
 
         public JointBVH(int kCount)
         {
-            wOrder = new string[19] 
+            wOrder = new string[19]
                {
                 "XZY","XZY","XZY","XZY","XZY","YZX","ZYX","YZX","ZYX",
                 "YZX","ZYX","YZX","ZYX","XZY","XZY","XYZ","XZY","XZY",
@@ -30,26 +30,26 @@ namespace AninToBVH
         }
         public BVHJoint readJoint(int iit, int kCount)
         {
-            BVHJointKey [] positions;
+            BVHJointKey[] positions;
             BVHJoint pJoint = new BVHJoint();
             pJoint.mOrder = wOrder[iit];
             positions = readkeys(iit, kCount);
-            pJoint.mPosRotKeys  = positions;
+            pJoint.mPosRotKeys = positions;
             return pJoint;
         }
-        public BVHJointKey[] readkeys(int iit,int kCount) 
+        public BVHJointKey[] readkeys(int iit, int kCount)
         {
             BVHJointKey[] m_keys = new BVHJointKey[kCount];
             for (int j = 0; j < kCount; j++)
             {
                 BVHJointKey pJKey = new BVHJointKey();
-                pJKey.mPos.X  = 0;
-                if (iit == 0) pJKey.mPos.Y  = (float)43.5285;
-                else          pJKey.mPos.Y  = 0;
-                pJKey.mPos.Z  = 0;
-                pJKey.mRot.X  = 0;
-                pJKey.mRot.Y  = 0;
-                pJKey.mRot.Z  = 0;
+                pJKey.mPos.X = 0;
+                if (iit == 0) pJKey.mPos.Y = (float)43.5285;
+                else pJKey.mPos.Y = 0;
+                pJKey.mPos.Z = 0;
+                pJKey.mRot.X = 0;
+                pJKey.mRot.Y = 0;
+                pJKey.mRot.Z = 0;
                 m_keys[j] = pJKey;
             }
             return m_keys;
@@ -65,8 +65,8 @@ namespace AninToBVH
         }
         public struct BVHJointKey
         {
-            public Vector3  mPos;
-            public Vector3  mRot;
+            public Vector3 mPos;
+            public Vector3 mRot;
             public bool mIgnorePos;
             public bool mIgnoreRot;
         }
@@ -82,5 +82,5 @@ namespace AninToBVH
         ZYX = 5
     };
 
-   
+
 }

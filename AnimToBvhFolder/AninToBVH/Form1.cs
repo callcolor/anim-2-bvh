@@ -88,12 +88,12 @@ namespace AninToBVH
 
 
                 double mFrameTime = wTime * 0.5;
-                // dividing the total duration (lentgh) by the frame time 
+                // dividing the total duration (length) by the frame time 
                 // the number of frames is obtained.
                 double mDuration = MyBinBVH.Length;
                 uint mNumFrames = (uint)Math.Floor(mDuration / mFrameTime + .5);
                 // The class creates a JointBVH structure intended to receive
-                // processed data to transform the Vettore3 of rot 
+                // processed data to transform the Vector3 of rot 
                 // in degrees and Vector3 of Pos in inches. 
                 // The structure is initialized with Frames*(19)
                 // structures Pos [3], Rot [3] all set to zero, except
@@ -457,7 +457,7 @@ namespace AninToBVH
                 StringBuilder llse = new StringBuilder();
                 llse.Append("\t\t File "); llse.Append(wFileBVH.Text); llse.Append(NL);
                 llse.Append(NL);
-                llse.Append("Upload Informations"); llse.Append(NL);
+                llse.Append("Upload Information"); llse.Append(NL);
                 llse.Append("-------------------"); llse.Append(NL);
                 llse.Append("Priority\t : "); llse.Append(MyBinBVH.Priority); llse.Append(NL);
                 llse.Append("Loop \t\t : "); llse.Append(MyBinBVH.Loop == true ? "Yes" : "Not"); llse.Append(NL);
@@ -471,7 +471,7 @@ namespace AninToBVH
                 llse.Append("Ease in(sec)\t : "); llse.Append(MyBinBVH.EaseInTime);
                 llse.Append("\tOut(sec) : "); llse.Append(MyBinBVH.EaseOutTime); llse.Append(NL);
                 llse.Append(NL);
-                llse.Append("Usefull Information"); llse.Append(NL);
+                llse.Append("Useful Information"); llse.Append(NL);
                 llse.Append("-------------------"); llse.Append(NL);
                 llse.Append("Duration(sec)\t : "); llse.Append(NormStr(MyBinBVH.Length)); llse.Append(NL);
                 llse.Append("Frames\t\t : "); llse.Append(NormStr((float)mNumFrames)); llse.Append(NL);

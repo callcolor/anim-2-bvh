@@ -13,7 +13,7 @@ namespace AninToBVH
         /// Rotation Keyframe count (used internally)
         /// </summary>
         private int rotationkeys;
-        
+
         /// <summary>
         /// Position Keyframe count (used internally)
         /// </summary>
@@ -79,7 +79,7 @@ namespace AninToBVH
         public binBVHJoint[] joints;
 
         /// <summary>
-        /// Searialize an animation asset into it's joints/keyframes/meta data
+        /// Serialize an animation asset into it's joints/keyframes/meta data
         /// </summary>
         /// <param name="animationdata"></param>
         public myBinBVHAnimationReader(byte[] animationdata)
@@ -107,7 +107,7 @@ namespace AninToBVH
                 Loop = (Utils.BytesToInt(EndianSwap(animationdata, i, 4)) != 0); i += 4;
                 EaseInTime = Utils.BytesToFloat(EndianSwap(animationdata, i, 4), 0); i += 4;
                 EaseOutTime = Utils.BytesToFloat(EndianSwap(animationdata, i, 4), 0); i += 4;
-                HandPose = Utils.BytesToUInt(EndianSwap(animationdata, i, 4)); i += 4; // Handpose?
+                HandPose = Utils.BytesToUInt(EndianSwap(animationdata, i, 4)); i += 4; // HandPose?
 
                 JointCount = Utils.BytesToUInt(animationdata, i); i += 4; // Get Joint count
             }
@@ -118,7 +118,7 @@ namespace AninToBVH
                 Loop = (Utils.BytesToInt(animationdata, i) != 0); i += 4;
                 EaseInTime = Utils.BytesToFloat(animationdata, i); i += 4;
                 EaseOutTime = Utils.BytesToFloat(animationdata, i); i += 4;
-                HandPose = Utils.BytesToUInt(animationdata, i); i += 4; // Handpose?
+                HandPose = Utils.BytesToUInt(animationdata, i); i += 4; // HandPose?
 
                 JointCount = Utils.BytesToUInt(animationdata, i); i += 4; // Get Joint count
             }
