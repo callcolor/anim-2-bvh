@@ -3,3 +3,4 @@ obj/
 bin/
 AninToBVH.exe
 .claude/
+publish/
