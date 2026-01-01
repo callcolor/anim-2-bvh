@@ -8,7 +8,7 @@
             "name": "C#: AninToBVH Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/AninToBVH/AninToBVH.csproj"
+            "projectPath": "${workspaceFolder}/AnimToBvhFolder/AninToBVH/AninToBVH.csproj"
         }
     ]
 }
