@@ -71,8 +71,6 @@ namespace AninToBVH
                 wBVH.Text = Path.GetDirectoryName(wAnim.Text);
                 wFileBVH.Text = xAnim + ".bvh";
 
-                try
-                {
                     byte[] fileData = System.IO.File.ReadAllBytes(aFiles[ii]);
                     // Read the file .anim and creates the structure MyBinBVH
                     // Use the class myBinBVHAnimationReader OpenMetaverse (amended). 
@@ -100,8 +98,8 @@ namespace AninToBVH
                     // myTSBVH is filled with data read from anim.ini
                     // indent will be used later to indent the BVH file header
                     int[] indent = new int[19] { 1, 2, 3, 4, 5, 4, 5, 6, 7, 4, 5, 6, 7, 2, 3, 4, 2, 3, 4 };
-                    uint i;
-                    int j = 0;
+                uint i;
+                int j = 0;
                     for (i = 0; i < trans.mTranslation.Length; ++i)
                     {
                         if (trans.mTranslation[i].mIgnore)
@@ -117,16 +115,16 @@ namespace AninToBVH
                     // Value are processed for each of the joint
                     for (i = 0; i < numJoints; ++i)
                     {
-                        uint joint;
-                        Order order;
-                        Quaternion last_rot = new Quaternion();
+                    uint joint;
+                    Order order;
+                    Quaternion last_rot = new Quaternion();
                         string jointName = MyBinBVH.joints[i].Name;
-                        uint ji;
-                        // The joints of the anim file may be in different order
-                        // from the BVH Header model used 
-                        // in this procedure. It was therefore I decided to carry out
-                        // search by the name of the joint.
-                        for (ji = 0; ji < 19; ji++)
+                    uint ji;
+                    // The joints of the anim file may be in different order
+                    // from the BVH Header model used 
+                    // in this procedure. It was therefore I decided to carry out
+                    // search by the name of the joint.
+                    for (ji = 0; ji < 19; ji++)
                         {
                             joint = ji;
                             if (myTSBVH.mJoints[ji].mOutName == jointName) break;
@@ -152,33 +150,39 @@ namespace AninToBVH
                                 // last_rot (first frame) is not available
                                 // so we start with an identity quaternion
                                 last_rot = Quaternion.Identity;
-                                myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnorePos = true;
-                                myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnoreRot = true;
+                                try
+                                {
+                                    myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnorePos = true;
+                                    myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnoreRot = true;
+                                } catch (Exception) {
+                                    // the fuck?
+                                }
+                                
                             }
                             // The frame no.is equal to the time of the frame/FrameTime
                             float time_short = MyBinBVH.joints[i].rotationkeys[j].time;
                             double time = time_short;
-                            uint frame;
-                            frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
-                            // rot_vec is set to the rotation vector of the frame examined
-                            Vector3 rot_vec;
-                            rot_vec.X = MyBinBVH.joints[i].rotationkeys[j].key_element.X;
+                        uint frame;
+                        frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
+                        // rot_vec is set to the rotation vector of the frame examined
+                        Vector3 rot_vec;
+                        rot_vec.X = MyBinBVH.joints[i].rotationkeys[j].key_element.X;
                             rot_vec.Y = MyBinBVH.joints[i].rotationkeys[j].key_element.Y;
                             rot_vec.Z = MyBinBVH.joints[i].rotationkeys[j].key_element.Z;
-                            // we compute the inverse of quaternion framematrix 
-                            // and offsetmatrix
-                            Quaternion outRot;
-                            Quaternion inRot;
-                            Quaternion frameRot = myTSBVH.mFrameMatrix;
-                            Quaternion frameRotInv;
-                            frameRotInv.X = frameRot.X * -1f;
+                        // we compute the inverse of quaternion framematrix 
+                        // and offsetmatrix
+                        Quaternion outRot;
+                        Quaternion inRot;
+                        Quaternion frameRot = myTSBVH.mFrameMatrix;
+                        Quaternion frameRotInv;
+                        frameRotInv.X = frameRot.X * -1f;
                             frameRotInv.Y = frameRot.Y * -1f;
                             frameRotInv.Z = frameRot.Z * -1f;
                             frameRotInv.W = frameRot.W;
 
                             Quaternion offsetRot = myTSBVH.mOffsetMatrix;
-                            Quaternion offsetRotInv;
-                            offsetRotInv.X = offsetRot.X * -1f;
+                        Quaternion offsetRotInv;
+                        offsetRotInv.X = offsetRot.X * -1f;
                             offsetRotInv.Y = offsetRot.Y * -1f;
                             offsetRotInv.Z = offsetRot.Z * -1f;
                             offsetRotInv.W = offsetRot.W;
@@ -203,15 +207,21 @@ namespace AninToBVH
                             rot_vec = revMayaQ(inRot, order);
                             // the vector obtained is saved for use in
                             // when writing the file BVH
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.X = rot_vec.X;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Y = rot_vec.Y;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Z = rot_vec.Z;
-                            // If SL has missed because of little significance,
-                            // some frames, they are reconstructed with interpolation
-                            // If frames have been skipped by SL, 
-                            // frame is greater than last_frame + 1
-                            uint n;
-                            uint num = frame - last_frame;
+                            try
+                            {
+    myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.X = rot_vec.X;
+                                myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Y = rot_vec.Y;
+                                myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Z = rot_vec.Z;
+                            } catch (Exception)
+                            {
+
+                            }
+                        // If SL has missed because of little significance,
+                        // some frames, they are reconstructed with interpolation
+                        // If frames have been skipped by SL, 
+                        // frame is greater than last_frame + 1
+                        uint n;
+                        uint num = frame - last_frame;
                             Quaternion interp = new Quaternion();
                             for (n = last_frame + 1; n < frame; ++n)
                             {
@@ -253,16 +263,16 @@ namespace AninToBVH
                                 last_pos.Z = 0;
                                 last_frame = 1;
                             }
-                            uint frame;
-                            frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
+                        uint frame;
+                        frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
                             // 
                             current_pos.X = MyBinBVH.joints[i].positionkeys[j].key_element.X / 0.02540005f;
                             current_pos.Y = MyBinBVH.joints[i].positionkeys[j].key_element.Y / 0.02540005f;
                             current_pos.Z = MyBinBVH.joints[i].positionkeys[j].key_element.Z / 0.02540005f;
                             // All we need is the frame matrix and its inverse
                             Quaternion frameRot = myTSBVH.mFrameMatrix;
-                            Quaternion frameRotInv;
-                            frameRotInv.X = -frameRot.X;
+                        Quaternion frameRotInv;
+                        frameRotInv.X = -frameRot.X;
                             frameRotInv.Y = -frameRot.Y;
                             frameRotInv.Z = -frameRot.Z;
                             frameRotInv.W = frameRot.W;
@@ -270,15 +280,19 @@ namespace AninToBVH
                             current_pos = (current_pos * frameRotInv) + relkey;
                             // 
                             // 
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.X = current_pos.X;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Y = current_pos.Y;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Z = current_pos.Z;
-                            // 
-                            // 
-                            uint n;
-                            uint num = frame - last_frame;
-                            Vector3 interp;
-                            for (n = last_frame + 1; n < frame; ++n)
+                            try
+                            {
+                                myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.X = current_pos.X;
+                                myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Y = current_pos.Y;
+                                myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Z = current_pos.Z;
+                            } catch (Exception) { }
+                            
+                        // 
+                        // 
+                        uint n;
+                        uint num = frame - last_frame;
+                        Vector3 interp;
+                        for (n = last_frame + 1; n < frame; ++n)
                             {
                                 interp = Vector3.Lerp(last_pos, current_pos, 1f / num * (n - last_frame));
                                 myTSBVH.mJoints[joint].mPosRotKeys[n - 1].mPos.X = interp.X;
@@ -345,8 +359,8 @@ namespace AninToBVH
                     // CHANNELS for the hip joint is special
                     llsd.Append("\tCHANNELS 6 Xposition Yposition Zposition Xrotation Zrotation Yrotation " + NL);
                     int wExInd = 0;
-                    int wInd;
-                    j = 0;
+                int wInd;
+                j = 0;
                     // We start from the second joint - hip has already been created.
                     for (i = 1; i < myTSBVH.mJoints.Length; ++i)
                     {
@@ -395,8 +409,8 @@ namespace AninToBVH
 
                     for (i = 0; i < mNumFrames; ++i)
                     {
-                        uint ji;
-                        for (ji = 0; ji < 19; ++ji)
+                    uint ji;
+                    for (ji = 0; ji < 19; ++ji)
                         {
                             if (ji == 0) // position values for only the first joint (hip)
                             {
@@ -462,22 +476,36 @@ namespace AninToBVH
                         if (i == 0)    // position values for only the first joint (hip)
                         {
                             llse.Append("hip(Pos)    ");
+                        try
+                        {
                             llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.X)); llse.Append(" ");
                             llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.Y)); llse.Append(" ");
                             llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.Z)); llse.Append("    ");
+
+                        }
+                        catch (Exception) { }
+                        }
+                        try
+                        {
                             llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.X)); llse.Append(" ");
                             llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.Y)); llse.Append(" ");
                             llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.Z)); llse.Append(NL);
+
                         }
+                        catch (Exception) { }
                         uAnim = myTSBVH.mJoints[i].mName + "            ";
                         llse.Append(uAnim.Substring(0, 12));
 
                         string s = myTSBVH.mJoints[i].mOrder;
                         char[] c = s.ToCharArray();
                         float[] wRot = new float[3];
-                        wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.X;
-                        wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Y;
-                        wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Z;
+                        try
+                        {
+                            wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.X;
+                            wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Y;
+                            wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Z;
+                        } catch (Exception) { }
+                    
                         // 
                         llse.Append(NormStr(wRot[c[0] - 'X']));
                         llse.Append(" ");
@@ -485,10 +513,14 @@ namespace AninToBVH
                         llse.Append(" ");
                         llse.Append(NormStr(wRot[c[2] - 'X']));
                         llse.Append("    ");
-                        wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.X;
-                        wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Y;
-                        wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Z;
-                        // 
+                        try
+                        {
+                            wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.X;
+                            wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Y;
+                            wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Z;
+                        }
+                        catch (Exception) { }
+                    // 
                         llse.Append(NormStr(wRot[c[0] - 'X']));
                         llse.Append(" ");
                         llse.Append(NormStr(wRot[c[1] - 'X']));
@@ -506,12 +538,6 @@ namespace AninToBVH
                     wAnim.Text = "";
                     labelSuccess.Text = "BVH file successfully created - " + wFileBVH.Text;
 
-                }
-
-                catch (System.Exception ex)
-                {
-//                    MessageBox.Show(aFiles[ii] + "\r\nNot Converted "+ ex.Message);
-                }
             }
 
         }
