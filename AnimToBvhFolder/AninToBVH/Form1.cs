@@ -83,15 +83,14 @@ namespace AninToBVH
                 double wTime = MyBinBVH.joints[0].rotationkeys[0].time;
                 if (wTime <= 0f)
                 {
-                    wTime = 0.25; // default 30 fps
+                    wTime = 0.25; // default fps
                 }
-
-
                 double mFrameTime = wTime * 0.5;
                 // dividing the total duration (length) by the frame time 
                 // the number of frames is obtained.
                 double mDuration = MyBinBVH.Length;
                 uint mNumFrames = (uint)Math.Floor(mDuration / mFrameTime + .5);
+                if (mNumFrames < 2) mNumFrames = 2;
                 // The class creates a JointBVH structure intended to receive
                 // processed data to transform the Vector3 of rot 
                 // in degrees and Vector3 of Pos in inches. 
@@ -144,7 +143,7 @@ namespace AninToBVH
                     order = (Order)Enum.Parse(typeof(Order), myTSBVH.mJoints[joint].mOrder);
                     //                        order = StringToOrder(myTSBVH.mJoints[joint].mOrder);
                     // we analyze every frame of the  file anim joint 
-                    for (j = 0; j < (MyBinBVH.joints[i].rotationkeys.Length); ++j)
+                    for (j = 0; j < MyBinBVH.joints[i].rotationkeys.Length; ++j)
                     {
 
                         if (j == 0) // first key 
@@ -156,22 +155,14 @@ namespace AninToBVH
                                             // last_rot (first frame) is not available
                                             // so we start with an identity quaternion
                             last_rot = Quaternion.Identity;
-                            try
-                            {
-                                myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnorePos = true;
-                                myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnoreRot = true;
-                            }
-                            catch (Exception)
-                            {
-                                // the fuck?
-                            }
+                            myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnorePos = true;
+                            myTSBVH.mJoints[joint].mPosRotKeys[0].mIgnoreRot = true;
 
                         }
                         // The frame no.is equal to the time of the frame/FrameTime
-                        float time_short = MyBinBVH.joints[i].rotationkeys[j].time;
-                        double time = time_short;
-                        uint frame;
-                        frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
+                        double time = MyBinBVH.joints[i].rotationkeys[j].time;
+                        uint frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
+                        if (frame < 2) frame = 2;
                         // rot_vec is set to the rotation vector of the frame examined
                         Vector3 rot_vec;
                         rot_vec.X = MyBinBVH.joints[i].rotationkeys[j].key_element.X;
@@ -215,16 +206,9 @@ namespace AninToBVH
                         rot_vec = revMayaQ(inRot, order);
                         // the vector obtained is saved for use in
                         // when writing the file BVH
-                        try
-                        {
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.X = rot_vec.X;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Y = rot_vec.Y;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Z = rot_vec.Z;
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.X = rot_vec.X;
+                        myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Y = rot_vec.Y;
+                        myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mRot.Z = rot_vec.Z;
                         // If SL has missed because of little significance,
                         // some frames, they are reconstructed with interpolation
                         // If frames have been skipped by SL, 
@@ -261,8 +245,7 @@ namespace AninToBVH
                     Vector3 relkey = new Vector3(0f, 43.5285f, 0f);
                     for (j = 0; j < (MyBinBVH.joints[i].positionkeys.Length); ++j)
                     {
-                        float time_short = MyBinBVH.joints[i].positionkeys[j].time;
-                        double time = time_short;
+                        double time = MyBinBVH.joints[i].positionkeys[j].time;
                         // Only for the hip frame 1 contains the value of the relative position.
                         // values for all other joint can remain set to zero.
                         if (j == 0)
@@ -272,8 +255,8 @@ namespace AninToBVH
                             last_pos.Z = 0;
                             last_frame = 1;
                         }
-                        uint frame;
-                        frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
+                        uint frame = (uint)Math.Floor(time / mFrameTime + 0.5f);
+                        if (frame < 2) frame = 2;
                         // 
                         current_pos.X = MyBinBVH.joints[i].positionkeys[j].key_element.X / 0.02540005f;
                         current_pos.Y = MyBinBVH.joints[i].positionkeys[j].key_element.Y / 0.02540005f;
@@ -289,14 +272,9 @@ namespace AninToBVH
                         current_pos = (current_pos * frameRotInv) + relkey;
                         // 
                         // 
-                        try
-                        {
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.X = current_pos.X;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Y = current_pos.Y;
-                            myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Z = current_pos.Z;
-                        }
-                        catch (Exception) { }
-
+                        myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.X = current_pos.X;
+                        myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Y = current_pos.Y;
+                        myTSBVH.mJoints[joint].mPosRotKeys[frame - 1].mPos.Z = current_pos.Z;
                         // 
                         // 
                         uint n;
@@ -486,36 +464,22 @@ namespace AninToBVH
                     if (i == 0)    // position values for only the first joint (hip)
                     {
                         llse.Append("hip(Pos)    ");
-                        try
-                        {
-                            llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.X)); llse.Append(" ");
-                            llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.Y)); llse.Append(" ");
-                            llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.Z)); llse.Append("    ");
-
-                        }
-                        catch (Exception) { }
+                        llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.X)); llse.Append(" ");
+                        llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.Y)); llse.Append(" ");
+                        llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[1].mPos.Z)); llse.Append("    ");
                     }
-                    try
-                    {
-                        llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.X)); llse.Append(" ");
-                        llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.Y)); llse.Append(" ");
-                        llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.Z)); llse.Append(NL);
-
-                    }
-                    catch (Exception) { }
+                    llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.X)); llse.Append(" ");
+                    llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.Y)); llse.Append(" ");
+                    llse.Append(NormStr(myTSBVH.mJoints[0].mPosRotKeys[mNumFrames - 1].mPos.Z)); llse.Append(NL);
                     uAnim = myTSBVH.mJoints[i].mName + "            ";
                     llse.Append(uAnim.Substring(0, 12));
 
                     string s = myTSBVH.mJoints[i].mOrder;
                     char[] c = s.ToCharArray();
                     float[] wRot = new float[3];
-                    try
-                    {
-                        wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.X;
-                        wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Y;
-                        wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Z;
-                    }
-                    catch (Exception) { }
+                    wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.X;
+                    wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Y;
+                    wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[1].mRot.Z;
 
                     // 
                     llse.Append(NormStr(wRot[c[0] - 'X']));
@@ -524,13 +488,9 @@ namespace AninToBVH
                     llse.Append(" ");
                     llse.Append(NormStr(wRot[c[2] - 'X']));
                     llse.Append("    ");
-                    try
-                    {
-                        wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.X;
-                        wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Y;
-                        wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Z;
-                    }
-                    catch (Exception) { }
+                    wRot[0] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.X;
+                    wRot[1] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Y;
+                    wRot[2] = myTSBVH.mJoints[i].mPosRotKeys[mNumFrames - 1].mRot.Z;
                     // 
                     llse.Append(NormStr(wRot[c[0] - 'X']));
                     llse.Append(" ");
